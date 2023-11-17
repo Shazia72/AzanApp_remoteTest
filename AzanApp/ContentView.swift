@@ -23,20 +23,20 @@ struct ContentView: View {
     @State var azanTime = ""
      
     var body: some View {
-        VStack (spacing: 40){
-            Button("Listen Adhan"){
+        VStack (spacing: 30) {
+            Text("Adhan App").font(Font.custom("My font", size: 40))
+            Button("click here to Listen Adhan"){
                 SoundManager.instance.playAdhan()
             }
-            Text("\(getTime(date: currentDate))")
+            Text("\(getTime(date: currentDate))").bold()
                 .onAppear(perform: {
                     let _ = self.updateTime
                 })
-            Text(adhanApi?.data.timings.fajr ?? "Fajar")
-            Text(adhanApi?.data.timings.dhuhr ?? "Dhuhr")
-            Text(adhanApi?.data.timings.asr ?? "Asr")
-            Text(adhanApi?.data.timings.isha ?? "Maghrib")
-            //Text(Date.now, format: .dateTime.minute().hour())
-            Text(getFormattedTime())
+            Text("Fajar Adhan Time \(adhanApi?.data.timings.fajr ?? "Fajar")")
+            Text("Dhuhr Adhan Time \(adhanApi?.data.timings.dhuhr ?? "Dhuhr")")
+            Text("Asr Adhan Time \(adhanApi?.data.timings.asr ?? "Asr")")
+            Text("Maghrib Adhan Time \(adhanApi?.data.timings.maghrib ?? "Maghrib")")
+            Text("Isha Adhan Time \(adhanApi?.data.timings.isha ?? "Isha")")
             
             if adhanApi?.data.timings.fajr == getFormattedTime(){
                 Text("Adhan-e-Fajar").onAppear(){
@@ -77,8 +77,8 @@ struct ContentView: View {
     func getFormattedTime() -> String{
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
-        let m1 = formatter.string(from: Date())
-        return m1
+        let formattedTime = formatter.string(from: Date())
+        return formattedTime
     }
     
     func getTime(date: Date) -> String{
@@ -97,15 +97,12 @@ struct ContentView: View {
         
         guard let url = URL(string: endpoint) else {throw AdhanError.invalidResponse}
         
-        let (data1, response) = try await URLSession.shared.data(from: url)
+        let (data, response) = try await URLSession.shared.data(from: url)
         
         guard let response = response as? HTTPURLResponse, response.statusCode == 200
         else {throw AdhanError.invalidResponse}
         
-        //let decoder = JSONDecoder()
-        return try! JSONDecoder().decode(AdanApiData.self, from: data1)
-     
-        //return try decoder.decode(data.self, from: data1)
+        return try! JSONDecoder().decode(AdanApiData.self, from: data)
     }
 }
 enum AdhanError: Error{
